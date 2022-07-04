@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:lista_de_tarefas/models/todo_model.dart';
+import 'package:lista_de_tarefas/widgets/todoListItem.dart';
 
 class TodoListPage extends StatefulWidget {
   TodoListPage({Key? key}) : super(key: key);
@@ -16,57 +18,51 @@ class TodoListPage extends StatefulWidget {
 class _TodoListPageState extends State<TodoListPage> {
   final TextEditingController _todoController = TextEditingController();
 
-  List<String> todos = [];
+  List<Todo> todos = [];
 
   bool check = false;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    "To Do",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                  ),
-                  Icon(Icons.check_box),
-                ],
-              ),
-              hSpace(),
-              rowAddTask(),
-              hSpace(),
-              Expanded(
-                child: ListView(
-                  shrinkWrap: true,
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    for (String todo in todos)
-                      ListTile(
-                        title: Text("$todo"),
-                        subtitle: Text("04/07/2022"),
-                        leading: Checkbox(
-                          onChanged: ((bool? value) {
-                            setState(() {
-                              check = value!;
-                            });
-                          }),
-                          value: check,
-                        ),
-                      ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "To Do",
+                      style:
+                          TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                    ),
+                    Icon(Icons.check_box),
                   ],
                 ),
-              ),
-              hSpace(),
-              baseRow(),
-            ],
+                hSpace(),
+                rowAddTask(),
+                hSpace(),
+                Expanded(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      for (Todo todo in todos)
+                        TodoListItem(
+                          todo: todo,
+                        ),
+                    ],
+                  ),
+                ),
+                hSpace(),
+                baseRow(),
+              ],
+            ),
           ),
         ),
       ),
@@ -83,7 +79,7 @@ class _TodoListPageState extends State<TodoListPage> {
     return Row(
       children: [
         Expanded(
-          child: Text("0 tasks"),
+          child: Text("${todos.length} tasks"),
         ),
         ElevatedButton(
           onPressed: () {},
@@ -99,6 +95,7 @@ class _TodoListPageState extends State<TodoListPage> {
       children: [
         Expanded(
           child: TextField(
+            onSubmitted: (value) => addTodo(),
             controller: _todoController,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
@@ -126,10 +123,13 @@ class _TodoListPageState extends State<TodoListPage> {
 
   addTodo() {
     //Coletar o texto no campo
-    String todo = _todoController.text;
+    String title = _todoController.text;
     //armazenar o texto na lista
-    todos.add(todo);
-
-    setState(() {});
+    setState(() {
+      Todo newTodo = Todo(title: title, date: DateTime.now());
+      todos.add(newTodo);
+    });
+    //limpando o campo
+    _todoController.clear();
   }
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 
 class Todo {
-  String? todo;
-  String? date;
-  bool? check;
+  String? title;
+  DateTime date;
+  bool? check = false;
 
   Todo({
-    required this.todo,
-    required this.check,
+    required this.title,
     required this.date,
+    this.check,
   });
 }
