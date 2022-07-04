@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, sort_child_properties_last
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +7,14 @@ import 'package:lista_de_tarefas/models/todo_model.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class TodoListItem extends StatelessWidget {
-  const TodoListItem({Key? key, required this.todo}) : super(key: key);
+  const TodoListItem({
+    Key? key,
+    required this.todo,
+    required this.onDelete,
+  }) : super(key: key);
 
   final Todo todo;
+  final Function(Todo) onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +68,12 @@ class TodoListItem extends StatelessWidget {
         endActionPane: ActionPane(
           motion: DrawerMotion(),
           extentRatio: 0.20,
-          children: const [
+          children: [
             // A SlidableAction can have an icon and/or a label.
             SlidableAction(
-              onPressed: null,
+              onPressed: (_) {
+                onDelete(todo);
+              },
               backgroundColor: Color(0xFFFE4A49),
               foregroundColor: Colors.white,
               icon: Icons.delete,

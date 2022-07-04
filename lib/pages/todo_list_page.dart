@@ -20,6 +20,13 @@ class _TodoListPageState extends State<TodoListPage> {
 
   List<Todo> todos = [];
 
+  //Todos List Save
+  List<Todo>? deletedListTodos;
+
+  //Todo Uni Save
+  Todo? deletedTodo;
+  int? deletedTodoPos;
+
   bool check = false;
   @override
   Widget build(BuildContext context) {
@@ -55,6 +62,7 @@ class _TodoListPageState extends State<TodoListPage> {
                       for (Todo todo in todos)
                         TodoListItem(
                           todo: todo,
+                          onDelete: onDelete,
                         ),
                     ],
                   ),
@@ -82,10 +90,62 @@ class _TodoListPageState extends State<TodoListPage> {
           child: Text("${todos.length} tasks"),
         ),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: confirmationAlert,
           child: Text("Clean all"),
         ),
       ],
+    );
+  }
+
+  confirmationAlert() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text("Delete All Todos?"),
+        content: Text("Are you sure you want to delete alll todos?"),
+        actions: [
+          TextButton(
+            child: Text("Cancel"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          TextButton(
+            child: Text("Delete"),
+            onPressed: () {
+              Navigator.pop(context);
+              clearAllTodos();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  clearAllTodos() {
+    // MUITO IMPORTANTE
+    // deletedListTodos = todos NÃO IRA FUNCIONAR pois no momento que limparmos todos ele ira limpar deleteListTodos por ter recebido uma referencia
+
+    deletedListTodos = [...todos];
+    print(deletedListTodos);
+    setState(() {
+      todos.clear();
+    });
+    print(deletedListTodos);
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("All Todos are deleted"),
+        action: SnackBarAction(
+          label: "Undo",
+          textColor: Colors.red,
+          onPressed: () {
+            setState(() {
+              todos = deletedListTodos!;
+            });
+          },
+        ),
+      ),
     );
   }
 
@@ -131,5 +191,30 @@ class _TodoListPageState extends State<TodoListPage> {
     });
     //limpando o campo
     _todoController.clear();
+  }
+
+  void onDelete(Todo todo) {
+    //Salvando todo
+    deletedTodo = todo;
+    deletedTodoPos = todos.indexOf(todo);
+
+    setState(() {
+      todos.remove(todo);
+    });
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Todo: ${todo.title} removed"),
+        action: SnackBarAction(
+          label: "Undo",
+          textColor: Colors.red,
+          onPressed: () {
+            setState(() {
+              todos.insert(deletedTodoPos!, deletedTodo!);
+            });
+          },
+        ),
+      ),
+    );
   }
 }
