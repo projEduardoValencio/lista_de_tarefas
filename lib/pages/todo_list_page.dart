@@ -6,11 +6,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-class TodoListPage extends StatelessWidget {
+class TodoListPage extends StatefulWidget {
   TodoListPage({Key? key}) : super(key: key);
 
-  final TextEditingController _emailController = TextEditingController();
+  @override
+  State<TodoListPage> createState() => _TodoListPageState();
+}
 
+class _TodoListPageState extends State<TodoListPage> {
+  final TextEditingController _todoController = TextEditingController();
+
+  List<String> todos = [];
+
+  bool check = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,18 +48,19 @@ class TodoListPage extends StatelessWidget {
                 child: ListView(
                   shrinkWrap: true,
                   children: [
-                    Container(
-                      height: 50,
-                      color: Colors.red,
-                    ),
-                    Container(
-                      height: 50,
-                      color: Colors.blue,
-                    ),
-                    Container(
-                      height: 50,
-                      color: Colors.green,
-                    ),
+                    for (String todo in todos)
+                      ListTile(
+                        title: Text("$todo"),
+                        subtitle: Text("04/07/2022"),
+                        leading: Checkbox(
+                          onChanged: ((bool? value) {
+                            setState(() {
+                              check = value!;
+                            });
+                          }),
+                          value: check,
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -90,6 +99,7 @@ class TodoListPage extends StatelessWidget {
       children: [
         Expanded(
           child: TextField(
+            controller: _todoController,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
               labelText: "Add a task",
@@ -106,11 +116,20 @@ class TodoListPage extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               primary: Colors.lightBlue,
             ),
-            onPressed: () {},
+            onPressed: addTodo,
             child: Icon(Icons.add),
           ),
         ),
       ],
     );
+  }
+
+  addTodo() {
+    //Coletar o texto no campo
+    String todo = _todoController.text;
+    //armazenar o texto na lista
+    todos.add(todo);
+
+    setState(() {});
   }
 }
