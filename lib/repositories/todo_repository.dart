@@ -21,6 +21,7 @@ class TodoRepository {
   Future<List<Todo>> getTodoList() async {
     sharedPreferences = await SharedPreferences.getInstance();
     final String jsonString = sharedPreferences.getString(todoListKey) ?? '[]';
+    print(jsonString);
     final List jsonDecoded = jsonDecode(jsonString);
     return jsonDecoded.map((e) => Todo.fromJson(e)).toList();
   }

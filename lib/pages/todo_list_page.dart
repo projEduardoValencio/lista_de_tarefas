@@ -41,6 +41,8 @@ class _TodoListPageState extends State<TodoListPage> {
   Todo? deletedTodo;
   int? deletedTodoPos;
 
+  String? errorText;
+
   bool check = false;
   @override
   Widget build(BuildContext context) {
@@ -77,6 +79,7 @@ class _TodoListPageState extends State<TodoListPage> {
                         TodoListItem(
                           todo: todo,
                           onDelete: onDelete,
+                          onCheck: onCheck,
                         ),
                     ],
                   ),
@@ -180,6 +183,7 @@ class _TodoListPageState extends State<TodoListPage> {
               border: OutlineInputBorder(),
               labelText: "Add a task",
               hintText: 'Workout',
+              errorText: errorText,
             ),
           ),
         ),
@@ -201,6 +205,14 @@ class _TodoListPageState extends State<TodoListPage> {
   }
 
   addTodo() {
+    if (_todoController.text.isEmpty) {
+      setState(() {
+        errorText = "This field is empty";
+      });
+      return;
+    }
+    errorText = null;
+
     //Coletar o texto no campo
     String title = _todoController.text;
     //armazenar o texto na lista
@@ -238,5 +250,15 @@ class _TodoListPageState extends State<TodoListPage> {
         ),
       ),
     );
+  }
+
+  void onCheck(Todo todo, bool check) {
+    int positionTodo = todos.indexOf(todo);
+    setState(() {
+      todos[positionTodo] =
+          Todo(title: todo.title, date: todo.date, check: check);
+      todoRepository.saveTodoList(todos);
+    });
+    print(todos[positionTodo].check);
   }
 }

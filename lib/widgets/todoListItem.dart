@@ -6,15 +6,26 @@ import 'package:intl/intl.dart';
 import 'package:lista_de_tarefas/models/todo_model.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-class TodoListItem extends StatelessWidget {
+import '../repositories/todo_repository.dart';
+
+class TodoListItem extends StatefulWidget {
   const TodoListItem({
     Key? key,
     required this.todo,
     required this.onDelete,
+    required this.onCheck,
   }) : super(key: key);
 
   final Todo todo;
   final Function(Todo) onDelete;
+  final Function(Todo, bool) onCheck;
+
+  @override
+  State<TodoListItem> createState() => _TodoListItemState();
+}
+
+class _TodoListItemState extends State<TodoListItem> {
+  final TodoRepository todoRepository = TodoRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +46,11 @@ class TodoListItem extends StatelessWidget {
                   width: 2,
                 ),
                 //CHECKBOX
-                Checkbox(value: false, onChanged: (_) {}),
+                Checkbox(
+                    value: widget.todo.check as bool,
+                    onChanged: (bool? value) {
+                      widget.onCheck(widget.todo, value!);
+                    }),
                 SizedBox(
                   width: 10,
                 ),
@@ -46,16 +61,23 @@ class TodoListItem extends StatelessWidget {
                     children: [
                       //TODO TITLE
                       Text(
-                        "${todo.title}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+                        "${widget.todo.title}",
+                        style: !widget.todo.check
+                            ? TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16)
+                            : TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 16,
+                                color: Colors.grey,
+                                decoration: TextDecoration.lineThrough),
                       ),
                       // SizedBox(
                       //   height: 1,
                       // ),
                       //TODO DATE
                       Text(
-                        DateFormat('dd/MMM/yyyy - HH:mm').format(todo.date),
+                        DateFormat('dd/MMM/yyyy - HH:mm')
+                            .format(widget.todo.date),
                         style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
                     ],
@@ -72,7 +94,7 @@ class TodoListItem extends StatelessWidget {
             // A SlidableAction can have an icon and/or a label.
             SlidableAction(
               onPressed: (_) {
-                onDelete(todo);
+                widget.onDelete(widget.todo);
               },
               backgroundColor: Color(0xFFFE4A49),
               foregroundColor: Colors.white,
