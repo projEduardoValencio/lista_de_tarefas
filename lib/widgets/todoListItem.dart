@@ -14,11 +14,13 @@ class TodoListItem extends StatefulWidget {
     required this.todo,
     required this.onDelete,
     required this.onCheck,
+    required this.dark,
   }) : super(key: key);
 
   final Todo todo;
   final Function(Todo) onDelete;
   final Function(Todo, bool) onCheck;
+  final bool dark;
 
   @override
   State<TodoListItem> createState() => _TodoListItemState();
@@ -35,7 +37,9 @@ class _TodoListItemState extends State<TodoListItem> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
-            color: Colors.grey[300],
+            color: widget.dark
+                ? Color.fromARGB(255, 78, 78, 78)
+                : Colors.grey[300],
           ),
           height: 60,
           child: Padding(
@@ -66,7 +70,9 @@ class _TodoListItemState extends State<TodoListItem> {
                             ? TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                                color: Colors.black)
+                                color: widget.dark
+                                    ? Color.fromARGB(255, 212, 212, 212)
+                                    : Colors.black)
                             : TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 16,
