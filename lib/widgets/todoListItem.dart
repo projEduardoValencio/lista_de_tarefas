@@ -64,7 +64,9 @@ class _TodoListItemState extends State<TodoListItem> {
                         "${widget.todo.title}",
                         style: !widget.todo.check
                             ? TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16)
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.black)
                             : TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 16,
