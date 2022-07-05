@@ -7,10 +7,13 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:lista_de_tarefas/models/todo_model.dart';
 import 'package:lista_de_tarefas/repositories/todo_repository.dart';
+import 'package:lista_de_tarefas/widgets/drawerItem.dart';
 import 'package:lista_de_tarefas/widgets/todoListItem.dart';
 
 class TodoListPage extends StatefulWidget {
-  TodoListPage({Key? key}) : super(key: key);
+  TodoListPage({Key? key, required this.change}) : super(key: key);
+
+  Function change;
 
   @override
   State<TodoListPage> createState() => _TodoListPageState();
@@ -48,14 +51,12 @@ class _TodoListPageState extends State<TodoListPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        drawer: DrawerItem(change: widget.change),
         appBar: AppBar(
           centerTitle: true,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
-                width: 5,
-              ),
               Text(
                 "To Do",
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
@@ -64,6 +65,9 @@ class _TodoListPageState extends State<TodoListPage> {
                 width: 5,
               ),
               Icon(Icons.check_box),
+              SizedBox(
+                width: 40.0,
+              ),
             ],
           ),
         ),
