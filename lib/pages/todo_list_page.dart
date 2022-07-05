@@ -11,9 +11,11 @@ import 'package:lista_de_tarefas/widgets/drawerItem.dart';
 import 'package:lista_de_tarefas/widgets/todoListItem.dart';
 
 class TodoListPage extends StatefulWidget {
-  TodoListPage({Key? key, required this.change}) : super(key: key);
+  TodoListPage({Key? key, required this.change, required this.dark})
+      : super(key: key);
 
   Function change;
+  bool dark;
 
   @override
   State<TodoListPage> createState() => _TodoListPageState();
@@ -91,6 +93,7 @@ class _TodoListPageState extends State<TodoListPage> {
                             todo: todo,
                             onDelete: onDelete,
                             onCheck: onCheck,
+                            dark: widget.dark,
                           ),
                       ],
                     ),
@@ -150,7 +153,15 @@ class _TodoListPageState extends State<TodoListPage> {
         ),
         ElevatedButton(
           onPressed: confirmationAlert,
-          child: Text("Clean all"),
+          style: ElevatedButton.styleFrom(
+            primary: widget.dark ? Colors.cyanAccent : null,
+          ),
+          child: Text(
+            "Clean all",
+            style: TextStyle(
+              color: widget.dark ? Colors.grey[700] : null,
+            ),
+          ),
         ),
       ],
     );
@@ -167,8 +178,8 @@ class _TodoListPageState extends State<TodoListPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text("Delete All Todos?"),
-        content: Text("Are you sure you want to delete alll todos?"),
+        title: Text("Delete All To Do?"),
+        content: Text("Are you sure you want to delete alll To Do?"),
         actions: [
           TextButton(
             child: Text("Cancel"),
@@ -255,11 +266,14 @@ class _TodoListPageState extends State<TodoListPage> {
           height: 52,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: Colors.lightBlue,
+              primary: widget.dark ? Colors.cyanAccent : null,
               shape: CircleBorder(),
             ),
             onPressed: addTodo,
-            child: Icon(Icons.add),
+            child: Icon(
+              Icons.add,
+              color: widget.dark ? Colors.grey[700] : null,
+            ),
           ),
         ),
       ],
@@ -299,7 +313,7 @@ class _TodoListPageState extends State<TodoListPage> {
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text("Todo: ${todo.title} removed"),
+        content: Text("To do: ${todo.title} removed"),
         action: SnackBarAction(
           label: "Undo",
           textColor: Colors.red,

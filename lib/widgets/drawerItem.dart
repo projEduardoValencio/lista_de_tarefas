@@ -23,11 +23,18 @@ class _DrawerItemState extends State<DrawerItem> {
             children: [
               Column(
                 children: [
+                  SizedBox(
+                    height: 20,
+                  ),
                   Text(
                     "Configuration",
-                    style: TextStyle(fontSize: 24),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 30,
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text("Dark Theme"),
                       Switch(

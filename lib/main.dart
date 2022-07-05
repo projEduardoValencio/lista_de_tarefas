@@ -26,6 +26,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       home: TodoListPage(
         change: change,
+        dark: darkThemeOn,
       ),
       // theme: ThemeData.dark(),
     );
