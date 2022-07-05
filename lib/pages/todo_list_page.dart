@@ -48,40 +48,48 @@ class _TodoListPageState extends State<TodoListPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 5,
+              ),
+              Text(
+                "To Do",
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              Icon(Icons.check_box),
+            ],
+          ),
+        ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      "To Do",
-                      style:
-                          TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                    ),
-                    Icon(Icons.check_box),
-                  ],
-                ),
                 hSpace(),
                 rowAddTask(),
                 hSpace(),
                 Expanded(
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: [
-                      for (Todo todo in todos)
-                        TodoListItem(
-                          todo: todo,
-                          onDelete: onDelete,
-                          onCheck: onCheck,
-                        ),
-                    ],
+                  child: RefreshIndicator(
+                    onRefresh: _refresh,
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        for (Todo todo in todos)
+                          TodoListItem(
+                            todo: todo,
+                            onDelete: onDelete,
+                            onCheck: onCheck,
+                          ),
+                      ],
+                    ),
                   ),
                 ),
                 hSpace(),
@@ -92,6 +100,36 @@ class _TodoListPageState extends State<TodoListPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _refresh() async {
+// await Future.delayed(
+    //   Duration(seconds: 1),
+    // );
+
+    //Sorteando pela data
+    setState(() {
+      todos.sort(
+        (a, b) {
+          return a.date.compareTo(b.date);
+        },
+      );
+
+      //Metodo para inserir um novo item a cima na lista de TO DOs
+      // List<Todo> nTodos = todos.reversed.toList();
+      // todos = [...nTodos];
+
+      //Sorteando os que ja foram concluidos
+      todos.sort((a, b) {
+        if (a.check && !b.check)
+          return 1;
+        else if (!a.check && b.check)
+          return -1;
+        else
+          return 0;
+      });
+      todoRepository.saveTodoList(todos);
+    });
   }
 
   SizedBox hSpace() {
@@ -114,6 +152,13 @@ class _TodoListPageState extends State<TodoListPage> {
     );
   }
 
+  _deleteJustChecked() {
+    todos.removeWhere((e) => e.check);
+    setState(() {
+      todoRepository.saveTodoList(todos);
+    });
+  }
+
   confirmationAlert() {
     showDialog(
       context: context,
@@ -125,6 +170,16 @@ class _TodoListPageState extends State<TodoListPage> {
             child: Text("Cancel"),
             onPressed: () {
               Navigator.pop(context);
+            },
+          ),
+          TextButton(
+            child: Text(
+              "Just Checkeds",
+              style: TextStyle(color: Colors.amber),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteJustChecked();
             },
           ),
           TextButton(
@@ -180,7 +235,9 @@ class _TodoListPageState extends State<TodoListPage> {
             onSubmitted: (value) => addTodo(),
             controller: _todoController,
             decoration: InputDecoration(
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
               labelText: "Add a task",
               hintText: 'Workout',
               errorText: errorText,
@@ -195,6 +252,7 @@ class _TodoListPageState extends State<TodoListPage> {
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               primary: Colors.lightBlue,
+              shape: CircleBorder(),
             ),
             onPressed: addTodo,
             child: Icon(Icons.add),
@@ -219,7 +277,7 @@ class _TodoListPageState extends State<TodoListPage> {
     setState(() {
       Todo newTodo = Todo(title: title, date: DateTime.now());
       todos.add(newTodo);
-      todoRepository.saveTodoList(todos);
+      _refresh();
     });
     //limpando o campo
     _todoController.clear();
